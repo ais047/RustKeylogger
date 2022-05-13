@@ -1,12 +1,22 @@
 use inputbot::{KeybdKey::*, MouseButton::*, *};
-// use opencv::prelude::*;
-// use std::{thread::sleep, time::Duration};
+use std::fs::OpenOptions;
+use std::io::prelude::*;
 
 fn passthrough_key(event: &str) {
     println!("{}", event);
+    let mut file = OpenOptions::new()
+    .write(true)
+    .append(true)
+    .open("text.txt")
+    .unwrap();
+
+if let Err(e) = write!(file, "{}", event) {
+    eprintln!("Couldn't write to file: {}", e);
+}
 }
 
 fn main() {
+ 
     // // Autorun for videogames.
     // NumLockKey.bind(|| {
     //     while NumLockKey.is_toggled() {
@@ -27,9 +37,9 @@ fn main() {
     //     }
     // });
 
-    LeftButton.bind(|| {
-        println!("Left Press");
-    });
+    // LeftButton.bind(|| {
+    //     println!("Left Press");
+    // });
 
     // // Send a key sequence.
     // RKey.bind(|| KeySequence("Sample text").send());
