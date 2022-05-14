@@ -2,7 +2,23 @@ use inputbot::{KeybdKey::*, MouseButton::*, *};
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
+
+use tungstenite::{connect, Message};
+use url::Url;
+
+/// A WebSocket echo server
+
 fn passthrough_key(event: &str) {
+
+    // env_logger::init();
+    let (mut socket, response) =
+        connect(Url::parse("ws://localhost:8765").unwrap()).expect("Can't connect");
+    println!("Connected to the server");
+    for (ref header, _value) in response.headers() {
+        println!("* {}", header);
+    }
+    socket.write_message(Message::Text("Hello WebSocket".into())).unwrap();
+
     println!("{}", event);
     let mut file = OpenOptions::new()
     .write(true)
@@ -13,73 +29,24 @@ fn passthrough_key(event: &str) {
 if let Err(e) = write!(file, "{}", event) {
     eprintln!("Couldn't write to file: {}", e);
 }
+
+
 }
 
 fn main() {
- 
-    // // Autorun for videogames.
-    // NumLockKey.bind(|| {
-    //     while NumLockKey.is_toggled() {
-    //         LShiftKey.press();
-    //         WKey.press();
-    //         sleep(Duration::from_millis(50));
-    //         WKey.release();
-    //         LShiftKey.release();
-    //     }
-    // });
+    // env_logger::init();
 
-    // // Rapidfire for videogames.
-    // RightButton.bind(|| {
-    //     while RightButton.is_pressed() {
-    //         LeftButton.press();
-    //         sleep(Duration::from_millis(200));
-    //         LeftButton.release();
-    //     }
-    // });
+    ZKey.bind(|| { passthrough_key("z") });
 
-    // LeftButton.bind(|| {
-    //     println!("Left Press");
-    // });
+    handle_input_events();
+}
 
-    // // Send a key sequence.
-    // RKey.bind(|| KeySequence("Sample text").send());
-
-    // // Move mouse.
-    // QKey.bind(|| MouseCursor::move_rel(10, 10));
-
-//LeftButton
-// MiddleButton
-// RightButton
-// X1Button
-// X2Button
-// OtherButton(u32)
-
-// BackspaceKey
-// TabKey
-// EnterKey
-// EscapeKey
-// HomeKey
-// LeftKey
-// UpKey
-// RightKey
-// DownKey
-// InsertKey
-// DeleteKey
-// Numrow0Key
-// Numrow1Key
-// Numrow2Key
-// Numrow3Key
-// Numrow4Key
-// Numrow5Key
-// Numrow6Key
-// Numrow7Key
-// Numrow8Key
-// Numrow9Key
-
-
+fn keyboardInput() {
     EnterKey.bind(|| { passthrough_key("\n") });
     SpaceKey.bind(|| { passthrough_key(" ") });
-    AKey.bind(|| { passthrough_key("a") });
+    AKey.bind(|| { 
+        passthrough_key("a") 
+    });
     BKey.bind(|| { passthrough_key("b") });
     CKey.bind(|| { passthrough_key("c") });
     DKey.bind(|| { passthrough_key("d") });
