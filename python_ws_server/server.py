@@ -5,11 +5,13 @@ import websockets
 async def echo(websocket):
     remote_ip = websocket.remote_address[0]
     # Create File for this address and log out to file
-    file = open('logs/' + remote_ip + '.txt', 'a+')
+    file = open('logs/' + remote_ip + '_ws.txt', 'a+')
     async for message in websocket:
         print("From IP Address:", remote_ip)
         print("Message: ", message)
+        # Currently Writes to file on Client Close and Backwards
         file.write(message)
+
         # await websocket.send(message)
 
 async def main():

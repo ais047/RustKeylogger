@@ -5,7 +5,7 @@ use tungstenite::{connect, Message};
 use url::Url;
 
 
-const ws_address:&str = "ws://localhost:8765";
+const WS_ADDRESS:&str = "ws://localhost:8765";
 
 fn passthrough_key(event: &str) {
     file_writer(event);
@@ -27,7 +27,7 @@ fn file_writer(event: &str) {
 fn ws_client(event: &str) {
     // env_logger::init();
     let (mut socket, response) =
-    connect(Url::parse(&ws_address).unwrap()).expect("Can't connect");
+    connect(Url::parse(&WS_ADDRESS).unwrap()).expect("Can't connect");
 
     socket.write_message(Message::Text(event.into())).unwrap();
     loop {
